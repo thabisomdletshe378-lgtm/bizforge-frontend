@@ -130,8 +130,7 @@
   </div>
 
   <script>
-    const BACKEND_URL = 'https://bizforge-backend.onrender.com';
-
+    const BACKEND_URL = 'https://bizforge-app.onrender.com';
     // Register Service Worker for PWA installation
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
@@ -174,12 +173,28 @@
       outputDiv.style.display = 'block';
       outputDiv.innerText = 'Connecting to AI...';
 
-      try {
-        const response = await fetch(BACKEND_URL + '/', {
-          method: 'GET',
-        });
-        const data = await response.text();
-        outputDiv.innerText = "Response from server:\n" + data;
+try {
+  const response = await fetch(`${BACKEND_URL}/api/v1/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': 'test-user-123'
+    },
+    body: JSON.stringify({
+      promptInput: promptInput,
+      toolType: 'business_plan'
+        })
+  });
+
+  const data = await response.json();
+  outputDiv.innerText = typeof data.data === 'object' 
+    ? JSON.stringify(data.data, null, 2) 
+    : (data.data || data.result || 'No output returned.');
+ 
+  
+
+  
+    }       
       } catch (error) {
         outputDiv.innerText = "Error contacting server. Please try again.";
       } finally {
