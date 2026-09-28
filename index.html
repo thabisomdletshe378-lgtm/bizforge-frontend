@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BizForge AI</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0284c7">
   <style>
     * {
       box-sizing: border-box;
@@ -129,6 +131,13 @@
 
   <script>
     const BACKEND_URL = 'https://bizforge-backend.onrender.com';
+
+    // Register Service Worker for PWA installation
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('PWA Service Worker Registered'))
+        .catch((err) => console.log('Service Worker Failed', err));
+    }
 
     // Verify backend connectivity on startup
     async function checkBackend() {
