@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizForge AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .header {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      margin-bottom: 30px;
+      margin-top: 20px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 12px;
+      background-color: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    textarea:focus, input:focus {
+      border-color: #38bdf8;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:active {
+      opacity: 0.8;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 16px;
+      background: #0f172a;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+      white-space: pre-wrap;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>BizForge AI</h1>
+    <p>Generate & Forge Your Business Strategy</p>
+  </div>
+
+  <div class="card">
+    <div style="text-align: center;">
+      <span class="status-badge" id="backendStatus">Checking backend connection...</span>
+    </div>
+
+    <div class="form-group">
+      <label for="prompt">Describe Your Business Idea</label>
+      <textarea id="prompt" rows="4" placeholder="e.g. A localized delivery service for home-cooked meals..."></textarea>
+    </div>
+
+    <button id="generateBtn" onclick="generateIdea()">Generate Plan</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = 'https://bizforge-backend.onrender.com';
+
+    // Verify backend connectivity on startup
+    async function checkBackend() {
+      const statusBadge = document.getElementById('backendStatus');
+      try {
+        const response = await fetch(BACKEND_URL + '/');
+        const text = await response.text();
+        if (response.ok) {
+          statusBadge.innerText = 'Connected to BizForge API';
+          statusBadge.style.color = '#4ade80';
+          statusBadge.style.background = 'rgba(34, 197, 94, 0.2)';
+        } else {
+          throw new Error();
+        }
+      } catch (err) {
+        statusBadge.innerText = 'Backend Waking Up...';
+        statusBadge.style.color = '#facc15';
+        statusBadge.style.background = 'rgba(250, 204, 21, 0.2)';
+      }
+    }
+
+    async function generateIdea() {
+      const promptInput = document.getElementById('prompt').value;
+      const outputDiv = document.getElementById('output');
+      const btn = document.getElementById('generateBtn');
+
+      if (!promptInput.trim()) {
+        alert('Please enter a business description.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Forging Plan...';
+      outputDiv.style.display = 'block';
+      outputDiv.innerText = 'Connecting to AI...';
+
+      try {
+        const response = await fetch(BACKEND_URL + '/', {
+          method: 'GET',
+        });
+        const data = await response.text();
+        outputDiv.innerText = "Response from server:\n" + data;
+      } catch (error) {
+        outputDiv.innerText = "Error contacting server. Please try again.";
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Generate Plan';
+      }
+    }
+
+    checkBackend();
+  </script>
+</body>
+</html>
